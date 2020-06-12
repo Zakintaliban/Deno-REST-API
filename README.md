@@ -80,4 +80,6 @@ and now we use postman to see if the response is okay to postman.
 
 now we just type "http://localhost:5000/api".
 
+![postman](postman1.png)
+
 # right now I'm going to sleep 🥱. and I'll update it as soon as I can 😉.
