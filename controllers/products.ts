@@ -43,9 +43,13 @@ const getProducts = ({ response }: { response: any }) => {
 
 // desc: get single product ↓
 // routes: GET /api/:id ↓
-const getProduct = (
-  { params, response }: { params: { id: string }; response: any },
-) => {
+const getProduct = ({
+  params,
+  response,
+}: {
+  params: { id: string };
+  response: any;
+}) => {
   const product: Product | undefined = products.find((p) => p.id === params.id);
   if (product) {
     response.status = 200;
@@ -64,42 +68,85 @@ const getProduct = (
 
 // desc: add product ↓
 // routes: POST /api ↓
-const addProduct = async (
-  { response, request }: { request: any; response: any },
-) => {
+const addProduct = async ({
+  response,
+  request,
+}: {
+  request: any;
+  response: any;
+}) => {
   const body = await request.body();
 
   if (!request.hasBody) {
-    response.status = 400,
-      response.body = {
+    (response.status = 400),
+      (response.body = {
         success: false,
         msg: "cannot add product",
-      };
+      });
   } else {
     const product: Product = body.value;
     product.id = v4.generate();
     products.push(product);
-    response.status = 201,
-      response.body = {
+    (response.status = 201),
+      (response.body = {
         success: true,
         data: product,
-      };
+      });
   }
 };
 
 // desc: update product ↓
 // routes: PUT /api/:id ↓
-const updateProduct = ({ response }: { response: any }) => {
-  response.body = {
-    success: true,
-  };
+const updateProduct = async ({
+  params,
+  request,
+  response,
+}: {
+  params: { id: string };
+  request: any;
+  response: any;
+}) => {
+  const product: Product | undefined = products.find((p) => p.id === params.id);
+  if (product) {
+    const body = await request.body();
+    const updateData: {
+      name?: string;
+      desc?: string;
+      price?: number;
+      condition?: string;
+    } = body.value;
+    products = products.map((p) =>
+      p.id === params.id ? { ...p, ...updateData } : p
+    );
+    (response.status = 200),
+      (response.body = {
+        success: true,
+        data: products,
+      });
+  } else {
+    response.status = 404;
+    response.body = {
+      success: false,
+      msg: "no product found",
+    };
+  }
 };
 
 // desc: delete product ↓
 // routes: DELETE /api/:id ↓
-const deleteProduct = ({ response }: { response: any }) => {
+const deleteProduct = ({
+  params,
+  response,
+}: {
+  params: { id: string };
+  response: any;
+}) => {
+  products = products.filter((p) => p.id !== params.id);
   response.body = {
     success: true,
+    msg: "product has been removed",
+    data: products,
   };
 };
+
 export { getProducts, getProduct, addProduct, updateProduct, deleteProduct };
