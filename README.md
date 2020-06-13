@@ -396,4 +396,64 @@ const addProduct = async (
 remember we need to import v4 from the [deno.land](https://deno.land/std/uuid/mod.ts)
 and also put async and await since `request.body()` method returns promise
 
-# right now I'm going to study 🇯🇵 language. and I'll update it as soon as I can 😉.
+now for the PUT product
+
+```ts
+const updateProduct = async ({
+  params,
+  request,
+  response,
+}: {
+  params: { id: string };
+  request: any;
+  response: any;
+}) => {
+  const product: Product | undefined = products.find((p) => p.id === params.id);
+  if (product) {
+    const body = await request.body();
+    const updateData: {
+      name?: string;
+      desc?: string;
+      price?: number;
+      condition?: string;
+    } = body.value;
+    products = products.map((p) =>
+      p.id === params.id ? { ...p, ...updateData } : p
+    );
+    (response.status = 200),
+      (response.body = {
+        success: true,
+        data: products,
+      });
+  } else {
+    response.status = 404;
+    response.body = {
+      success: false,
+      msg: "no product found",
+    };
+  }
+};
+```
+
+the code of GETbyID and PUT is the same at first but in the middle, we put map function
+
+and last is for the DELETE product
+
+```ts
+const deleteProduct = ({
+  params,
+  response,
+}: {
+  params: { id: string };
+  response: any;
+}) => {
+  products = products.filter((p) => p.id !== params.id);
+  response.body = {
+    success: true,
+    msg: "product has been removed",
+    data: products,
+  };
+};
+```
+
+and now we finally have a functional CRUD using deno.
