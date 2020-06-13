@@ -138,7 +138,7 @@ we going to make `folder` any name you want but I want to name it `controllers`.
 
 ```ts
 interface Product {
-  id: number;
+  id: string;
   name: string;
   desc: string;
   price: number;
@@ -147,28 +147,28 @@ interface Product {
 
 let products: Product[] = [
   {
-    id: 1,
+    id: "1",
     name: "Macbook Pro 2018",
     desc: "13 inch, 8 GB RAM",
     price: 20000000,
     condition: "new",
   },
   {
-    id: 2,
+    id: "2",
     name: "Motorola G5S Plus",
     desc: "5.5 inch, 4 GB RAM",
     price: 3000000,
     condition: "new",
   },
   {
-    id: 3,
+    id: "3",
     name: "Acer E5 475G",
     desc: "14 inch, 12 GB RAM (upgraded)",
     price: 7000000,
     condition: "used",
   },
   {
-    id: 4,
+    id: "4",
     name: "iPad 2",
     desc: "10 inch, 2 GB RAM",
     price: 5000000,
@@ -186,28 +186,28 @@ import { Product } from "../types.ts";
 
 let products: Product[] = [
   {
-    id: 1,
+    id: "1",
     name: "Macbook Pro 2018",
     desc: "13 inch, 8 GB RAM",
     price: 20000000,
     condition: "new",
   },
   {
-    id: 2,
+    id: "2",
     name: "Motorola G5S Plus",
     desc: "5.5 inch, 4 GB RAM",
     price: 3000000,
     condition: "new",
   },
   {
-    id: 3,
+    id: "3",
     name: "Acer E5 475G",
     desc: "14 inch, 12 GB RAM (upgraded)",
     price: 7000000,
     condition: "used",
   },
   {
-    id: 4,
+    id: "4",
     name: "iPad 2",
     desc: "10 inch, 2 GB RAM",
     price: 5000000,
@@ -220,7 +220,7 @@ let products: Product[] = [
 
 ```ts
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   desc: string;
   price: number;
@@ -332,5 +332,68 @@ now to make sure that the CRUD is on. we'll just call each one of them in postma
 ![postmanPOST](postman3.png)
 ![postmanPUT](postman4.png)
 ![postmanDELETE](postman5.png)
+
+awesome, right now CRUD can be called, but we going to put logic inside of it.
+
+now we going to update GET for each product.
+
+```ts
+const getProduct = ({
+  params,
+  response,
+}: {
+  params: { id: string };
+  response: any;
+}) => {
+  const product: Product | undefined = products.find((p) => p.id === params.id);
+  if (product) {
+    response.status = 200;
+    response.body = {
+      success: true,
+      data: product,
+    };
+  } else {
+    response.status = 404;
+    response.body = {
+      success: false,
+      msg: "no product found",
+    };
+  }
+};
+```
+
+now for to POST product
+
+```ts
+import { v4 } from "https://deno.land/std/uuid/mod.ts";
+---
+rest of the code.
+---
+const addProduct = async (
+  { response, request }: { request: any; response: any },
+) => {
+  const body = await request.body();
+
+  if (!request.hasBody) {
+    response.status = 400,
+      response.body = {
+        success: false,
+        msg: "cannot add product",
+      };
+  } else {
+    const product: Product = body.value;
+    product.id = v4.generate();
+    products.push(product);
+    response.status = 201,
+      response.body = {
+        success: true,
+        data: product,
+      };
+  }
+};
+```
+
+remember we need to import v4 from the [deno.land](https://deno.land/std/uuid/mod.ts)
+and also put async and await since `request.body()` method returns promise
 
 # right now I'm going to study 🇯🇵 language. and I'll update it as soon as I can 😉.
